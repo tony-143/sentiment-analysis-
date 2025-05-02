@@ -6,12 +6,12 @@ from nltk.stem import SnowballStemmer, WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 import re
 
-# nltk.download('punkt')
-# nltk.download('stopwords')
+nltk.download('punkt')
+nltk.download('stopwords')
 
 # Load model and vectorizer
-model = pickle.load(open('sentiment_model.pkl', 'rb'))
-vectorizer = pickle.load(open('vectorizer.pkl', 'rb'))
+model = pickle.load(open(r'D:\Ai_projects\sentiment\src\sentiment_model.pkl', 'rb')) # Load the model from the specified path
+vectorizer = pickle.load(open(r'D:\Ai_projects\sentiment\src\vectorizer.pkl', 'rb')) # Load the vectorizer from the specified path
 
 # Init tools
 stemmer = SnowballStemmer("english")
@@ -43,4 +43,16 @@ if st.button("Analyze"):
         3: "Positive"
     }
     sentiment = sentiment_map.get(prediction, "Unknown")
-    st.write(f"Sentiment: {sentiment}")
+
+    color_map = {
+        "Irrelevant": "orange",
+        "Negative": "red",
+        "Neutral": "gray",
+        "Positive": "green"
+    }
+    color = color_map.get(sentiment, "black")
+
+    st.markdown(
+        f"<h4>Sentiment: <span style='color:{color}'>{sentiment}</span></h4>",
+        unsafe_allow_html=True
+    )
