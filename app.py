@@ -5,23 +5,24 @@ from nltk.corpus import stopwords
 from nltk.stem import SnowballStemmer, WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 import re
-import requests
-
-nltk.download('punkt')
-nltk.download('omw-1.4') 
-nltk.download('wordnet')
-nltk.download('stopwords')
-
-# if you want load model from local path, uncomment the following lines and comment the below lines
-# Load model and vectorizer from local path
-# model = pickle.load(open(r'D:\Ai_projects\sentiment\src\sentiment_model.pkl', 'rb')) # Load the model from the specified path
-# vectorizer = pickle.load(open(r'D:\Ai_projects\sentiment\src\vectorizer.pkl', 'rb')) # Load the vectorizer from the specified path
-
-
-# If you want to load the model from a URL or Google drive, uncomment the following lines and comment the above lines
-# import requests
 import gdown
 
+# Ensure NLTK data is downloaded properly
+try:
+    stop_words = set(stopwords.words('english'))
+except LookupError:
+    nltk.download('stopwords')
+    stop_words = set(stopwords.words('english'))
+
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt')
+
+nltk.download('omw-1.4') 
+nltk.download('wordnet')
+
+# If you want to load model from a URL, uncomment the following lines
 @st.cache_resource
 def download_model():
     url = "https://drive.google.com/uc?id=1c-OdneN0IAqydCy4kyJUqWet-cg_sGHG"
@@ -34,14 +35,11 @@ def download_vectorizer():
     gdown.download(url, "vectorizer.pkl", quiet=False)
     return pickle.load(open("vectorizer.pkl", "rb"))
 
-
-
 model = download_model()
 vectorizer = download_vectorizer()
 
 # Init tools
 stemmer = SnowballStemmer("english")
-stop_words = set(stopwords.words('english'))
 lemmatizer = WordNetLemmatizer()
 
 def clean_text(text):
@@ -55,6 +53,7 @@ def clean_text(text):
     words = [lemmatizer.lemmatize(word) for word in words]
     return ' '.join(words)
 
+# Streamlit App
 st.title("Sentiment Analyzer")
 user_input = st.text_area("Enter text")
 
@@ -62,12 +61,14 @@ if st.button("Analyze"):
     cleaned = clean_text(user_input)
     vect_text = vectorizer.transform([cleaned])
     prediction = model.predict(vect_text)[0]
+    
     sentiment_map = {
         0: "Irrelevant",
         1: "Negative",
         2: "Neutral",
         3: "Positive"
     }
+    
     sentiment = sentiment_map.get(prediction, "Unknown")
 
     color_map = {
@@ -76,10 +77,10 @@ if st.button("Analyze"):
         "Neutral": "gray",
         "Positive": "green"
     }
+    
     color = color_map.get(sentiment, "black")
 
     st.markdown(
         f"<h4>Sentiment: <span style='color:{color}'>{sentiment}</span></h4>",
         unsafe_allow_html=True
     )
-
