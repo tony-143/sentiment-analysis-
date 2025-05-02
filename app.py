@@ -12,7 +12,7 @@ def download_model():
 
 @st.cache_resource
 def download_vectorizer():
-    url = "https://drive.google.com/uc?id=1PqUSx5VHP16BJbSHYQw0KJEWjOJayLu_"
+    url = "https://drive.google.com/uc?id=1zxIPSWwstKvVrBvv0PntbfDgnySZJJC7"
     gdown.download(url, "vectorizer.pkl", quiet=True)
     return pickle.load(open("vectorizer.pkl", "rb"))
 
