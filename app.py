@@ -17,7 +17,8 @@ def download_vectorizer():
     return pickle.load(open("vectorizer.pkl", "rb"))
 
 model      = download_model()
-vectorizer = download_vectorizer()
+# vectorizer = download_vectorizer()
+vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
 
 # ————— Simple cleaner that uses only regex & split —————
 def clean_text(text):
