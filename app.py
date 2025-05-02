@@ -7,18 +7,9 @@ from nltk.tokenize import word_tokenize
 import re
 import gdown
 
-# Ensure NLTK resources are downloaded properly
-try:
-    stop_words = set(stopwords.words('english'))
-except LookupError:
-    nltk.download('stopwords')
-    stop_words = set(stopwords.words('english'))
-
-try:
-    nltk.data.find('tokenizers/punkt')
-except LookupError:
-    nltk.download('punkt')
-
+# Download necessary NLTK resources on app run
+nltk.download('punkt')
+nltk.download('stopwords')
 nltk.download('omw-1.4') 
 nltk.download('wordnet')
 
@@ -48,7 +39,7 @@ def clean_text(text):
     text = text.lower()
     text = re.sub(r'[^A-Za-z\s]', '', text)  # remove punctuation & numbers
     text = re.sub(r"http\S+|@\S+|#[A-Za-z0-9_]+", "", text)  # remove URLs, mentions, hashtags
-    words = word_tokenize(text)  # This is where the issue was, now 'punkt' will be available
+    words = word_tokenize(text)  # Ensure 'punkt' tokenizer is downloaded
     words = [stemmer.stem(word) for word in words if word.isalpha() and word not in stop_words]
     words = [lemmatizer.lemmatize(word) for word in words]
     return ' '.join(words)
