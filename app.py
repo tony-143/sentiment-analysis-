@@ -5,13 +5,37 @@ from nltk.corpus import stopwords
 from nltk.stem import SnowballStemmer, WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 import re
+import requests
 
 nltk.download('punkt')
 nltk.download('stopwords')
 
-# Load model and vectorizer
-model = pickle.load(open(r'D:\Ai_projects\sentiment\src\sentiment_model.pkl', 'rb')) # Load the model from the specified path
-vectorizer = pickle.load(open(r'D:\Ai_projects\sentiment\src\vectorizer.pkl', 'rb')) # Load the vectorizer from the specified path
+# if you want load model from local path, uncomment the following lines and comment the below lines
+# Load model and vectorizer from local path
+# model = pickle.load(open(r'D:\Ai_projects\sentiment\src\sentiment_model.pkl', 'rb')) # Load the model from the specified path
+# vectorizer = pickle.load(open(r'D:\Ai_projects\sentiment\src\vectorizer.pkl', 'rb')) # Load the vectorizer from the specified path
+
+
+# If you want to load the model from a URL or Google drive, uncomment the following lines and comment the above lines
+# import requests
+import gdown
+
+@st.cache_resource
+def download_model():
+    url = "https://drive.google.com/uc?id=1c-OdneN0IAqydCy4kyJUqWet-cg_sGHG"
+    gdown.download(url, "sentiment_model.pkl", quiet=False)
+    return pickle.load(open("sentiment_model.pkl", "rb"))
+
+@st.cache_resource
+def download_vectorizer():
+    url = "https://drive.google.com/uc?id=1PqUSx5VHP16BJbSHYQw0KJEWjOJayLu_"
+    gdown.download(url, "vectorizer.pkl", quiet=False)
+    return pickle.load(open("vectorizer.pkl", "rb"))
+
+
+
+model = download_model()
+vectorizer = download_vectorizer()
 
 # Init tools
 stemmer = SnowballStemmer("english")
