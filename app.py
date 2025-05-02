@@ -12,13 +12,13 @@ def download_model():
 
 @st.cache_resource
 def download_vectorizer():
-    url = "https://drive.google.com/uc?id=1zxIPSWwstKvVrBvv0PntbfDgnySZJJC7"
+    url = "https://drive.google.com/uc?id=1ZWXxBnaKAb3DtYy2D5GkBkEV-NT0-8L1"
     gdown.download(url, "vectorizer.pkl", quiet=True)
     return pickle.load(open("vectorizer.pkl", "rb"))
 
 model      = download_model()
-# vectorizer = download_vectorizer()
-vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
+vectorizer = download_vectorizer()
+# vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
 
 # ————— Simple cleaner that uses only regex & split —————
 def clean_text(text):
