@@ -8,6 +8,8 @@ import re
 import requests
 
 nltk.download('punkt')
+nltk.download('omw-1.4') 
+nltk.download('wordnet')
 nltk.download('stopwords')
 
 # if you want load model from local path, uncomment the following lines and comment the below lines
@@ -80,3 +82,4 @@ if st.button("Analyze"):
         f"<h4>Sentiment: <span style='color:{color}'>{sentiment}</span></h4>",
         unsafe_allow_html=True
     )
+
