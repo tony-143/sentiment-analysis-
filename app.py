@@ -3,7 +3,11 @@ import pickle
 import re
 import gdown
 
-# ————— Download & load your model and vectorizer —————
+# Load model and vectorizer from local path
+# model = pickle.load(open(r'D:\Ai_projects\sentiment\src\sentiment_model.pkl', 'rb')) # Load the model from the specified path
+# vectorizer = pickle.load(open(r'D:\Ai_projects\sentiment\src\vectorizer.pkl', 'rb')) # Load the vectorizer from the specified path
+
+# ————— Download & load your model and vectorizer from google drive—————
 @st.cache_resource
 def download_model():
     url = "https://drive.google.com/uc?id=1c-OdneN0IAqydCy4kyJUqWet-cg_sGHG"
