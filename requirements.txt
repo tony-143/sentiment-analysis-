@@ -2,7 +2,6 @@ pandas
 nltk
 matplotlib
 numpy
-scikit-learn
-pickle
+scikit-learn==1.3.2
 re
 gdown
