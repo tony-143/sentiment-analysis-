@@ -1,75 +1,50 @@
 import streamlit as st
 import pickle
-import nltk
-from nltk.corpus import stopwords
-from nltk.stem import SnowballStemmer, WordNetLemmatizer
-from nltk.tokenize import word_tokenize
 import re
 import gdown
 
-# Download necessary NLTK resources on app run
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('omw-1.4') 
-nltk.download('wordnet')
-
-# If you want to load model from a URL, uncomment the following lines
+# ————— Download & load your model and vectorizer —————
 @st.cache_resource
 def download_model():
     url = "https://drive.google.com/uc?id=1c-OdneN0IAqydCy4kyJUqWet-cg_sGHG"
-    gdown.download(url, "sentiment_model.pkl", quiet=False)
+    gdown.download(url, "sentiment_model.pkl", quiet=True)
     return pickle.load(open("sentiment_model.pkl", "rb"))
 
 @st.cache_resource
 def download_vectorizer():
     url = "https://drive.google.com/uc?id=1PqUSx5VHP16BJbSHYQw0KJEWjOJayLu_"
-    gdown.download(url, "vectorizer.pkl", quiet=False)
+    gdown.download(url, "vectorizer.pkl", quiet=True)
     return pickle.load(open("vectorizer.pkl", "rb"))
 
-model = download_model()
+model      = download_model()
 vectorizer = download_vectorizer()
 
-# Init tools
-stemmer = SnowballStemmer("english")
-lemmatizer = WordNetLemmatizer()
-
+# ————— Simple cleaner that uses only regex & split —————
 def clean_text(text):
     if not isinstance(text, str):
         return ""
+    # lowercase, remove numbers/punct/URLs/mentions/hashtags
     text = text.lower()
-    text = re.sub(r'[^A-Za-z\s]', '', text)  # remove punctuation & numbers
-    text = re.sub(r"http\S+|@\S+|#[A-Za-z0-9_]+", "", text)  # remove URLs, mentions, hashtags
-    words = word_tokenize(text)  # Ensure 'punkt' tokenizer is downloaded
-    words = [stemmer.stem(word) for word in words if word.isalpha() and word not in stop_words]
-    words = [lemmatizer.lemmatize(word) for word in words]
-    return ' '.join(words)
+    text = re.sub(r"http\S+|@\S+|#[A-Za-z0-9_]+", "", text)
+    text = re.sub(r'[^a-z\s]', ' ', text)
+    # collapse whitespace and return
+    return " ".join(text.split())
 
-# Streamlit App
+# ————— Streamlit UI —————
 st.title("Sentiment Analyzer")
-user_input = st.text_area("Enter text")
 
+user_input = st.text_area("Enter text here")
 if st.button("Analyze"):
-    cleaned = clean_text(user_input)
-    vect_text = vectorizer.transform([cleaned])
-    prediction = model.predict(vect_text)[0]
-    
-    sentiment_map = {
-        0: "Irrelevant",
-        1: "Negative",
-        2: "Neutral",
-        3: "Positive"
-    }
-    
-    sentiment = sentiment_map.get(prediction, "Unknown")
+    cleaned    = clean_text(user_input)
+    vect       = vectorizer.transform([cleaned])
+    pred_label = model.predict(vect)[0]
 
-    color_map = {
-        "Irrelevant": "orange",
-        "Negative": "red",
-        "Neutral": "gray",
-        "Positive": "green"
-    }
-    
-    color = color_map.get(sentiment, "black")
+    # map numeric → human
+    sentiment_map = {0: "Irrelevant", 1: "Negative", 2: "Neutral", 3: "Positive"}
+    sentiment     = sentiment_map.get(pred_label, "Unknown")
+
+    color_map = {"Irrelevant":"orange","Negative":"red","Neutral":"gray","Positive":"green"}
+    color     = color_map.get(sentiment,"black")
 
     st.markdown(
         f"<h4>Sentiment: <span style='color:{color}'>{sentiment}</span></h4>",
